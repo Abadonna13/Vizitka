@@ -46,7 +46,7 @@
     .hero-visual{
       display:flex;align-items:center;justify-content:center;position:relative;padding:20px;
       background:rgba(15,18,28,0.44);border:1px dashed rgba(255,255,255,0.14);border-radius:28px;
-      min-height:420px;
+      min-height:420px;overflow:visible;
     }
 
     .hero-visual::before{
@@ -59,7 +59,8 @@
 
     .hero-cta{display:flex;flex-wrap:nowrap;gap:14px;margin-top:18px;margin-bottom:24px;overflow-x:auto;-webkit-overflow-scrolling:touch;position:relative;z-index:999}
     .hero-cta::-webkit-scrollbar{display:none}
-    .hero-cta .btn{min-width:0;flex:0 0 auto}
+    .hero-cta .btn{min-width:0;flex:0 0 auto;position:relative}
+    .hero-cta .btn:hover{z-index:10001}
     .hero-card{
       padding:28px 26px 24px;background:rgba(5,7,15,0.6);border:1px solid rgba(116,178,255,0.1);
       border-radius:26px;box-shadow:0 24px 50px rgba(6,7,12,0.22);
@@ -136,7 +137,7 @@
     .social svg{width:22px;height:22px;display:block;fill:currentColor}
 
     .right{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:16px}
-    .side-widgets{display:flex;flex-direction:column;gap:14px;position:absolute;right:20px;bottom:20px;align-items:flex-end}
+    .side-widgets{display:flex;flex-direction:column;gap:14px;position:absolute;right:20px;bottom:20px;align-items:flex-end;z-index:6}
     .side-widgets .contact-item{min-width:220px;max-width:260px}
     .contact-item.small{padding:10px 12px;border-radius:12px}
     .avatar{width:140px;height:140px;border-radius:50%;overflow:hidden;border:4px solid rgba(255,255,255,0.04);display:inline-block;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));}
