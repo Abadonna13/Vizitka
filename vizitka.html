@@ -272,9 +272,9 @@
       clonedRoot.style.width = width + 'px';
       clonedRoot.style.height = height + 'px';
       // add padding so shadows/overflow are contained inside SVG
-      if(pad){
-        clonedRoot.style.margin = pad + 'px';
-      }
+      // use an inner container with padding to avoid offsets caused by
+      // the preceding <style> block when serializing
+      // (we will wrap the clonedRoot in this container below)
       clonedRoot.style.boxSizing = 'border-box';
 
       function inlineStyles(original, clone){
@@ -406,8 +406,12 @@
       const styleBlock = document.createElementNS(xhtml, 'style');
       const pageStyles = Array.from(document.querySelectorAll('style')).map(style => style.textContent).join('\n');
       styleBlock.textContent = pageStyles;
+      // create inner container that provides the padding area
+      const inner = document.createElementNS(xhtml, 'div');
+      inner.setAttribute('style', `width:100%;height:100%;box-sizing:border-box;padding:${pad}px;`);
+      inner.appendChild(clonedRoot);
       wrapper.appendChild(styleBlock);
-      wrapper.appendChild(clonedRoot);
+      wrapper.appendChild(inner);
       foreignObject.appendChild(wrapper);
       svg.appendChild(foreignObject);
       const serialized = new XMLSerializer().serializeToString(svg);
