@@ -105,9 +105,9 @@
     /* animated glow */
     .name::after{
       content:"";position:absolute;left:0;right:0;top:0;bottom:0;
-      background:linear-gradient(90deg, rgba(110,231,183,0.08), rgba(139,92,246,0.08));
-      filter:blur(18px);opacity:0.6;border-radius:6px;mix-blend-mode:screen;pointer-events:none;
-      animation: shimmer 4s linear infinite;z-index:0
+      background:linear-gradient(90deg, rgba(110,231,183,0.06), rgba(139,92,246,0.06));
+      filter:blur(14px);opacity:0.45;border-radius:6px;mix-blend-mode:screen;pointer-events:none;
+      animation: shimmer 4s linear infinite;z-index:-9999
     }
     @keyframes shimmer{0%{transform:translateX(-40%)}50%{transform:translateX(40%)}100%{transform:translateX(-40%)}}
 
