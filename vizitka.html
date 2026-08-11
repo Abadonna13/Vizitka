@@ -57,7 +57,7 @@
       width:100%;max-width:420px;border-radius:28px;object-fit:cover;filter:brightness(1.06) contrast(1.12);position:relative;z-index:1;
     }
 
-    .hero-cta{display:flex;flex-wrap:nowrap;gap:14px;margin-top:10px;margin-bottom:24px;overflow-x:auto;-webkit-overflow-scrolling:touch;position:relative;z-index:2}
+    .hero-cta{display:flex;flex-wrap:nowrap;gap:14px;margin-top:18px;margin-bottom:24px;overflow-x:auto;-webkit-overflow-scrolling:touch;position:relative;z-index:999}
     .hero-cta::-webkit-scrollbar{display:none}
     .hero-cta .btn{min-width:0;flex:0 0 auto}
     .hero-card{
@@ -106,7 +106,7 @@
       content:"";position:absolute;left:0;right:0;top:0;bottom:0;
       background:linear-gradient(90deg, rgba(110,231,183,0.12), rgba(139,92,246,0.12));
       filter:blur(20px);opacity:0.9;border-radius:6px;mix-blend-mode:screen;pointer-events:none;
-      animation: shimmer 4s linear infinite;
+      animation: shimmer 4s linear infinite;z-index:0
     }
     @keyframes shimmer{0%{transform:translateX(-40%)}50%{transform:translateX(40%)}100%{transform:translateX(-40%)}}
 
@@ -136,7 +136,7 @@
     .social svg{width:22px;height:22px;display:block;fill:currentColor}
 
     .right{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:16px}
-    .side-widgets{display:flex;flex-direction:column;gap:14px;margin-top:20px;align-items:flex-end}
+    .side-widgets{display:flex;flex-direction:column;gap:14px;position:absolute;right:20px;bottom:20px;align-items:flex-end}
     .side-widgets .contact-item{min-width:220px;max-width:260px}
     .contact-item.small{padding:10px 12px;border-radius:12px}
     .avatar{width:140px;height:140px;border-radius:50%;overflow:hidden;border:4px solid rgba(255,255,255,0.04);display:inline-block;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));}
