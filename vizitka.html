@@ -253,22 +253,28 @@
     }
 
     // Export card to PNG and PDF
-    async function nodeToDataURL(node, width, height){
+    async function nodeToDataURL(node, width, height, pad=0){
       const xmlns = 'http://www.w3.org/2000/svg';
       const xhtml = 'http://www.w3.org/1999/xhtml';
       const svg = document.createElementNS(xmlns, 'svg');
       svg.setAttribute('xmlns', xmlns);
-      svg.setAttribute('width', width);
-      svg.setAttribute('height', height);
+      const totalW = Math.round(width + pad*2);
+      const totalH = Math.round(height + pad*2);
+      svg.setAttribute('width', totalW);
+      svg.setAttribute('height', totalH);
       const foreignObject = document.createElementNS(xmlns, 'foreignObject');
-      foreignObject.setAttribute('width', width);
-      foreignObject.setAttribute('height', height);
+      foreignObject.setAttribute('width', totalW);
+      foreignObject.setAttribute('height', totalH);
 
       const clonedRoot = node.cloneNode(true);
       // force cloned root to the exact px size of the original to avoid
       // layout differences when rendering inside an SVG foreignObject
       clonedRoot.style.width = width + 'px';
       clonedRoot.style.height = height + 'px';
+      // add padding so shadows/overflow are contained inside SVG
+      if(pad){
+        clonedRoot.style.margin = pad + 'px';
+      }
       clonedRoot.style.boxSizing = 'border-box';
 
       function inlineStyles(original, clone){
@@ -396,7 +402,7 @@
       wrapper.setAttribute('xmlns', xhtml);
       // ensure wrapper uses fixed px dimensions so percentage-based children
       // render the same as in the page
-      wrapper.setAttribute('style', `width:${width}px;height:${height}px;box-sizing:border-box;`);
+      wrapper.setAttribute('style', `width:${totalW}px;height:${totalH}px;box-sizing:border-box;`);
       const styleBlock = document.createElementNS(xhtml, 'style');
       const pageStyles = Array.from(document.querySelectorAll('style')).map(style => style.textContent).join('\n');
       styleBlock.textContent = pageStyles;
@@ -406,7 +412,7 @@
       svg.appendChild(foreignObject);
       const serialized = new XMLSerializer().serializeToString(svg);
       const dataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(serialized);
-      return dataUrl;
+      return {dataUrl, pad};
     }
 
     async function exportAsImage(type){
@@ -414,7 +420,11 @@
       if(!card){ showToast('Не найдено содержимое для экспорта'); return; }
       const rect = card.getBoundingClientRect();
       const scale = window.devicePixelRatio || 1;
-      const svgUrl = await nodeToDataURL(card, rect.width, rect.height);
+      // add padding to include shadows/overflow when rendering
+      const PAD = 140; // pixels
+      const result = await nodeToDataURL(card, rect.width, rect.height, PAD);
+      const svgUrl = result.dataUrl;
+      const padUsed = result.pad || 0;
 
       return new Promise((resolve, reject)=>{
         const img = new Image();
@@ -430,7 +440,8 @@
             ctx.scale(scale, scale);
             ctx.fillStyle = getComputedStyle(document.body).background || '#0a0a0a';
             ctx.fillRect(0,0,rect.width,rect.height);
-            ctx.drawImage(img, 0, 0, rect.width, rect.height);
+            // draw from the padded svg: take source rect offset by padUsed
+            ctx.drawImage(img, padUsed, padUsed, rect.width, rect.height, 0, 0, rect.width, rect.height);
             canvas.toBlob((blob)=>{
               if(!blob){ reject(new Error('Не удалось создать изображение')); return; }
               const url = URL.createObjectURL(blob);
