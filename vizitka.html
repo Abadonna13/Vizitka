@@ -258,13 +258,8 @@
       const xhtml = 'http://www.w3.org/1999/xhtml';
       const svg = document.createElementNS(xmlns, 'svg');
       svg.setAttribute('xmlns', xmlns);
-      const totalW = Math.round(width + pad*2);
-      const totalH = Math.round(height + pad*2);
-      svg.setAttribute('width', totalW);
-      svg.setAttribute('height', totalH);
+      // we'll set svg/foreignObject sizes after measuring the rendered wrapper
       const foreignObject = document.createElementNS(xmlns, 'foreignObject');
-      foreignObject.setAttribute('width', totalW);
-      foreignObject.setAttribute('height', totalH);
 
       const clonedRoot = node.cloneNode(true);
       // force cloned root to the exact px size of the original to avoid
@@ -400,9 +395,9 @@
 
       const wrapper = document.createElementNS(xhtml, 'div');
       wrapper.setAttribute('xmlns', xhtml);
-      // ensure wrapper uses fixed px dimensions so percentage-based children
-      // render the same as in the page
-      wrapper.setAttribute('style', `width:${totalW}px;height:${totalH}px;box-sizing:border-box;`);
+      // initial wrapper style uses approximate size; we'll measure actual
+      // rendered size (including overflow) and then update svg/foreignObject
+      wrapper.setAttribute('style', `width:${Math.round(width + pad*2)}px;height:${Math.round(height + pad*2)}px;box-sizing:border-box;`);
       const styleBlock = document.createElementNS(xhtml, 'style');
       const pageStyles = Array.from(document.querySelectorAll('style')).map(style => style.textContent).join('\n');
       styleBlock.textContent = pageStyles;
@@ -428,9 +423,19 @@
       document.body.removeChild(meas);
       foreignObject.appendChild(wrapper);
       svg.appendChild(foreignObject);
+      // update svg and foreignObject to match measured size
+      const finalW = measuredW || Math.round(width + pad*2);
+      const finalH = measuredH || Math.round(height + pad*2);
+      svg.setAttribute('width', finalW);
+      svg.setAttribute('height', finalH);
+      foreignObject.setAttribute('width', finalW);
+      foreignObject.setAttribute('height', finalH);
+      // ensure wrapper uses final px dimensions
+      wrapper.setAttribute('style', `width:${finalW}px;height:${finalH}px;box-sizing:border-box;`);
+
       const serialized = new XMLSerializer().serializeToString(svg);
       const dataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(serialized);
-      return {dataUrl, pad, measuredW, measuredH};
+      return {dataUrl, pad, measuredW: finalW, measuredH: finalH};
     }
 
     async function exportAsImage(type){
